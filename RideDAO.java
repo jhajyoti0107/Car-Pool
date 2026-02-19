@@ -1,26 +1,51 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.*;
 
 public class RideDAO {
 
-    public static void addRide(Ride ride) {
-        try {
-            Connection con = DBConnection.getConnection();
+    public void createRide(int driverId, String source, String destination, int seats, double price) {
 
-            String sql = "INSERT INTO rides(source, destination, seats, fare) VALUES(?,?,?,?)";
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (Connection conn = DBConnection.getConnection()) {
 
-            ps.setString(1, ride.source);
-            ps.setString(2, ride.destination);
-            ps.setInt(3, ride.seats);
-            ps.setDouble(4, ride.fare);
+            String sql = "INSERT INTO rides(driver_id, source, destination, available_seats, price) VALUES (?, ?, ?, ?, ?)";
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, driverId);
+            ps.setString(2, source);
+            ps.setString(3, destination);
+            ps.setInt(4, seats);
+            ps.setDouble(5, price);
 
             ps.executeUpdate();
-            con.close();
+
+            System.out.println("✅ Ride Created Successfully");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void viewRides() {
+
+        try (Connection conn = DBConnection.getConnection()) {
+
+            String sql = "SELECT * FROM rides";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                System.out.println(
+                        "Ride ID: " + rs.getInt("ride_id") +
+                                " | Source: " + rs.getString("source") +
+                                " | Destination: " + rs.getString("destination") +
+                                " | Seats: " + rs.getInt("available_seats") +
+                                " | Price: " + rs.getDouble("price")
+                );
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
-
