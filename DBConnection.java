@@ -1,22 +1,22 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DBConnection {
 
-    public static Connection getConnection() {
-        Connection con = null;
+    private static final String URL = "jdbc:postgresql://localhost:5432/ride_app";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "Jyoti";  // change this
+
+    public static Connection getConnection() throws SQLException {
+
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/carpool_db",
-                "root",
-                "password"   
-            );
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("PostgreSQL Driver not found!");
+            throw new SQLException(e);
         }
-        return con;
+
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
